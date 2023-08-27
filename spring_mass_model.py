@@ -36,10 +36,10 @@ class OneDegreeOfFreedom:
 
         # ばね特性
         self.origin_point = np.array([0.0, 10.0]) # 原点
-        self.start_point = np.array([0.0, -15.0]) # 初期値
+        self.start_point = np.array([0.0, -10.0]) # 初期値
         self.natural_length = 10.0  # 自然長
         self.max_compression = 5.0  # 最大圧縮量
-        self.max_extension = 15.0   # 最大伸長量
+        self.max_extension = 5.0   # 最大伸長量
 
 
     # 微分方程式
@@ -48,11 +48,10 @@ class OneDegreeOfFreedom:
         # TODO 最大伸縮量導入
         state, vel = pre_state, pre_vel
 
-        # TODO 自然長からの伸縮量を算出する
-        # spring_length = self.natural_length - np.linalg.norm(state - self.origin_point)
-        # restoring_force = -self.k*spring_length
-
-        restoring_force = -self.k*state
+        # 伸縮量算出
+        spring_length = np.linalg.norm(state - self.origin_point[1]) - self.natural_length
+        restoring_force = self.k*spring_length
+    
         acc = (restoring_force - (self.c / self.m) * vel) / self.m  # 加速度: F/m = a (運動方程式)
 
         return vel, acc
@@ -65,7 +64,7 @@ class OneDegreeOfFreedom:
         
         # 初期条件
         self.ymax = 10.0
-        self.state[0], self.state[1] = self.start_point[0], -self.ymax
+        self.state = self.start_point
         self.velocity[0], self.velocity[1] = 0, -1e-6
 
         # 時間変数
@@ -174,7 +173,7 @@ class OneDegreeOfFreedom:
 
 
 if __name__ == '__main__':
-    oneDOF = OneDegreeOfFreedom(m=10.0, c=10.0, k=10.0)
+    oneDOF = OneDegreeOfFreedom(m=10.0, c=30.0, k=10.0)
     oneDOF.execute()
     anim = 1
     oneDOF.render(anim)
